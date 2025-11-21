@@ -145,6 +145,7 @@ public class Main {
             System.out.println(" Error !!! : " + e.getMessage());
         }
     }
+
     private static void showResults(PreparedStatement pstmnt) throws SQLException {
         try (ResultSet rs = pstmnt.executeQuery()) {
             boolean found = false;
@@ -163,6 +164,7 @@ public class Main {
             }
         }
     }
+
     private static void Payroll(Connection connect, Scanner scan) {
         String payroll = "SELECT * FROM EMPLOYEES";
         try (Statement stmnt = connect.createStatement()) {
@@ -178,15 +180,42 @@ public class Main {
             }
         } catch (SQLException e) {
             System.out.println(" Error !!! : " + e.getMessage());
-        }   
+        }
     }
+
+    private static void UpdateSal(Connection connect, Scanner scan) {
+        System.out.println("enter Employee id: ");
+        int id = scan.nextInt();
+        scan.nextLine();
+        System.out.println("Enter new basic salary:");
+        double new_basic_salary = scan.nextDouble();
+        scan.nextLine();
+        System.out.println("Enter new allowance:");
+        double new_allowance = scan.nextDouble();
+        scan.nextLine();
+        System.out.println("Enter new deduction:");
+        double new_deduction = scan.nextDouble();
+        scan.nextLine();
+        String Update = "update EMPLOYEES set Emp_Basic_Salary = ?, Emp_Allowance = ?, Emp_Deduction = ? where Emp_id = ?";
+        try (PreparedStatement pstmt = connect.prepareStatement(Update)) {
+            pstmt.setDouble(1, new_basic_salary);
+            pstmt.setDouble(2, new_allowance);
+            pstmt.setDouble(3, new_deduction);
+            pstmt.setDouble(4, id);
+            pstmt.executeUpdate();
+            System.out.println("Salary Updated Successfully...");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     private static void GenerateSlip(Connection connect, Scanner scan) {
         System.out.println(" Enter Employee ID to generate payroll slip: ");
         int empId = scan.nextInt();
         scan.nextLine();
 
-        String query = "SELECT Emp_name, Emp_position, Emp_Basic_Salary, Emp_Allowance, Emp_Deduction FROM EMPLOYEES WHERE Emp_id = ?";
-        try (PreparedStatement pstmnt = connect.prepareStatement(query)) {
+        String slip = "SELECT Emp_name, Emp_position, Emp_Basic_Salary, Emp_Allowance, Emp_Deduction FROM EMPLOYEES WHERE Emp_id = ?";
+        try (PreparedStatement pstmnt = connect.prepareStatement(slip)) {
             pstmnt.setInt(1, empId);
             try (ResultSet rs = pstmnt.executeQuery()) {
                 if (rs.next()) {
@@ -216,6 +245,6 @@ public class Main {
             System.out.println("Error generating payroll slip: " + e.getMessage());
             e.printStackTrace();
         }
-        
-    }    
+
+    }
 }
